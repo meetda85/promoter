@@ -1,0 +1,14 @@
+# Despliegue en Render (https://render.com) con un clic:
+# New → Blueprint → elige este repositorio. Render lee este archivo y ya está.
+services:
+  - type: web
+    name: promoter
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install && npm run build
+    startCommand: node server/src/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"

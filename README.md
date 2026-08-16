@@ -42,13 +42,59 @@ npm run dev         # Vite con recarga en caliente (puerto 5173)
 npm run dev:server  # relay del control remoto en el 8080
 ```
 
-### Instalar la app en el teléfono
+---
 
-- **Android / Chrome**: menú del navegador → «Instalar aplicación».
-- **iPhone / iPad**: abrir en **Safari** → botón Compartir → «Añadir a pantalla de inicio».
+## Instalar en el teléfono
 
-Una vez instalada funciona sin conexión: los guiones se guardan en el propio dispositivo
-(IndexedDB). Sólo hacen falta red y servidor para el mando por red y para Google Drive.
+Para que el teléfono la instale **como app de verdad** (icono propio, pantalla completa, funciona
+sin conexión) el navegador exige **HTTPS**. Por eso hay dos caminos, según lo que necesites.
+
+### Camino A — una URL propia en Internet (recomendado)
+
+Es el que da la experiencia completa: se instala de verdad y el mando por red funciona desde
+cualquier sitio, no sólo en la wifi de casa.
+
+El repositorio ya trae la configuración: `render.yaml` para [Render](https://render.com) y un
+`Dockerfile` para cualquier otro proveedor (Railway, Fly.io, un VPS, un NAS).
+
+En Render: *New* → *Blueprint* → elige este repositorio → *Apply*. Sale una dirección tipo
+`https://promoter-xxxx.onrender.com`. Ábrela en el teléfono y:
+
+- **Android / Chrome**: menú ⋮ → «Instalar aplicación».
+- **iPhone / iPad**: ábrela en **Safari** → botón Compartir → «Añadir a pantalla de inicio».
+
+> En el plan gratuito de Render el servidor se duerme tras un rato sin uso; la primera carga puede
+> tardar unos 30 segundos. Después va normal. Si lo vas a usar en rodajes, el plan más barato lo
+> mantiene despierto.
+
+### Camino B — desde tu propio ordenador, por wifi
+
+Sin cuentas ni despliegues, pero sólo dentro de tu red y con la instalación limitada (en Android no
+aparecerá «Instalar», y en iPhone quedará como acceso directo sin modo offline).
+
+```bash
+npm install
+npm start
+```
+
+Abre en el teléfono la dirección **Red** que imprime el servidor (`http://192.168.1.x:8080`). El
+ordenador tiene que quedarse encendido y en la misma wifi.
+
+Si quieres HTTPS sin desplegar nada, levanta un túnel sobre el servidor local y usa la dirección
+que te dé (ya es instalable):
+
+```bash
+npx cloudflared tunnel --url http://localhost:8080
+```
+
+### Una vez instalada
+
+Los guiones se guardan en el propio teléfono (IndexedDB) y la app abre sin conexión. Sólo hacen
+falta red y servidor para el **mando por red** y para **Google Drive**; el mando **Bluetooth**
+funciona siempre, incluso en modo avión.
+
+Instala la app en los **dos** teléfonos: el que muestra el texto y el que hace de mando. Son la
+misma app; el segundo entra en modo mando al escanear el QR.
 
 ---
 
@@ -173,3 +219,6 @@ Piezas que conviene conocer:
 | `npm run typecheck` | Comprobación de tipos |
 
 Variables de entorno del servidor: `PORT` (8080), `HOST` (0.0.0.0), `PROMOTER_DIST` (ruta al build).
+
+Despliegue: `render.yaml` (Blueprint de Render) y `Dockerfile` para cualquier otro proveedor de
+contenedores.
