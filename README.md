@@ -54,8 +54,25 @@ sin conexión) el navegador exige **HTTPS**. Por eso hay dos caminos, según lo 
 Es el que da la experiencia completa: se instala de verdad y el mando por red funciona desde
 cualquier sitio, no sólo en la wifi de casa.
 
-El repositorio ya trae la configuración: `render.yaml` para [Render](https://render.com) y un
-`Dockerfile` para cualquier otro proveedor (Railway, Fly.io, un VPS, un NAS).
+**Cuidado con el tipo de alojamiento.** El mando desde otro teléfono necesita una conexión
+WebSocket abierta de forma permanente, y eso exige un servidor que se quede vivo. Los alojamientos
+*serverless* (Vercel, Netlify, Cloudflare Pages, GitHub Pages) ejecutan funciones que nacen y mueren
+con cada petición: sirven la app perfectamente, pero no pueden sostener el relay.
+
+| Alojamiento | Prompter, editor, Drive, mando Bluetooth | Mando desde otro teléfono |
+| --- | --- | --- |
+| Render / Railway / Fly.io / VPS | Sí | **Sí** |
+| Vercel / Netlify / Cloudflare / GitHub Pages | Sí | No (sin relay) |
+
+Si aun así prefieres Vercel, el repositorio trae `vercel.json` y el despliegue funciona sin tocar
+nada: importas el repositorio y listo. La app detecta que no hay relay, lo dice con claridad en
+Ajustes → Mando de red y todo lo demás sigue funcionando. Puedes recuperar el mando por red más
+tarde levantando el servidor de `server/` en cualquier sitio y escribiendo su dirección en el campo
+«Servidor» de los dos teléfonos.
+
+Para tenerlo todo de una vez, el repositorio incluye `render.yaml` para
+[Render](https://render.com) y un `Dockerfile` para cualquier otro proveedor de contenedores
+(Railway, Fly.io, un VPS, un NAS).
 
 En Render: *New* → *Blueprint* → elige este repositorio → *Apply*. Sale una dirección tipo
 `https://promoter-xxxx.onrender.com`. Ábrela en el teléfono y:
@@ -220,5 +237,5 @@ Piezas que conviene conocer:
 
 Variables de entorno del servidor: `PORT` (8080), `HOST` (0.0.0.0), `PROMOTER_DIST` (ruta al build).
 
-Despliegue: `render.yaml` (Blueprint de Render) y `Dockerfile` para cualquier otro proveedor de
-contenedores.
+Despliegue: `render.yaml` (Blueprint de Render), `Dockerfile` para cualquier proveedor de
+contenedores y `vercel.json` para un despliegue estático sin relay.

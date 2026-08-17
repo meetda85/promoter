@@ -8,6 +8,11 @@ export interface LinkOptions {
   room: string
   role: 'host' | 'remote'
   name?: string
+  /**
+   * Reintentos antes de rendirse. Si la app está alojada en un sitio sin relay
+   * (un hosting estático), insistir para siempre sólo gasta batería.
+   */
+  maxAttempts?: number
   onMessage: (msg: AnyMessage) => void
   onStatus: (status: LinkStatus, detail?: string) => void
 }
@@ -91,6 +96,14 @@ export class RemoteLink {
 
   private scheduleRetry(): void {
     this.attempts++
+    const limit = this.opts.maxAttempts ?? Infinity
+    if (this.attempts > limit) {
+      this.opts.onStatus(
+        'error',
+        'No hay servidor de enlace en esta dirección. Indica uno en «Servidor» o usa un alojamiento que lo incluya.',
+      )
+      return
+    }
     const delay = Math.min(15_000, 700 * 2 ** Math.min(this.attempts, 5))
     this.opts.onStatus('retrying', `Reintentando en ${Math.round(delay / 1000)} s`)
     if (this.timer) clearTimeout(this.timer)
@@ -128,6 +141,13 @@ export class RemoteLink {
     if (payload === this.lastPayload) return
     this.lastPayload = payload
     if (this.connected) this.ws!.send(payload)
+  }
+
+  /** Reintento manual: vuelve a empezar la cuenta de intentos. */
+  retryNow(): void {
+    this.attempts = 0
+    if (this.timer) clearTimeout(this.timer)
+    this.connect()
   }
 
   close(): void {

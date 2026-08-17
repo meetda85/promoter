@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useStore } from './useStore'
 import { sendPrompterCommand } from './bus'
 import { RemoteLink, type LinkStatus } from '../lib/remote/transport'
@@ -9,6 +9,8 @@ export interface HostLinkInfo {
   status: LinkStatus
   detail?: string
   remotes: number
+  /** Reintento manual tras agotar los automáticos. */
+  retry: () => void
 }
 
 /**
@@ -23,14 +25,15 @@ export function useRemoteHost(enabled = true): HostLinkInfo {
   const autoConnect = useStore((s) => s.settings.remote.autoConnect)
   const ready = useStore((s) => s.ready)
 
-  const [info, setInfo] = useState<HostLinkInfo>({ status: 'off', remotes: 0 })
   const linkRef = useRef<RemoteLink | null>(null)
+  const retry = useCallback(() => linkRef.current?.retryNow(), [])
+  const [info, setInfo] = useState<HostLinkInfo>({ status: 'off', remotes: 0, retry })
 
   useEffect(() => {
     if (!ready || !enabled || !autoConnect || !room) {
       linkRef.current?.close()
       linkRef.current = null
-      setInfo({ status: 'off', remotes: 0 })
+      setInfo({ status: 'off', remotes: 0, retry })
       return
     }
 
@@ -39,6 +42,7 @@ export function useRemoteHost(enabled = true): HostLinkInfo {
       room,
       role: 'host',
       name: 'teleprompter',
+      maxAttempts: 6,
       onStatus: (status, detail) => setInfo((prev) => ({ ...prev, status, detail })),
       onMessage: (msg) => {
         if (msg.t === 'peers' || (msg.t === 'hello' && msg.from === undefined)) {
@@ -63,7 +67,7 @@ export function useRemoteHost(enabled = true): HostLinkInfo {
       link.close()
       linkRef.current = null
     }
-  }, [ready, enabled, autoConnect, room, serverUrl])
+  }, [ready, enabled, autoConnect, room, serverUrl, retry])
 
   return info
 }

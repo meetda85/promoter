@@ -56,6 +56,17 @@ export function PairPanel({ link }: { link: HostLinkInfo }) {
           {statusText[link.status]}
         </div>
 
+        {link.status === 'error' && (
+          <div className="card" style={{ borderColor: 'var(--danger)', marginBottom: 10, textAlign: 'left' }}>
+            <div className="muted" style={{ marginBottom: 10 }}>
+              {link.detail}
+            </div>
+            <button className="btn wide" onClick={() => link.retry()}>
+              Reintentar
+            </button>
+          </div>
+        )}
+
         <div className="qr">
           <canvas ref={canvasRef} />
         </div>
