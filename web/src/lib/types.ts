@@ -89,6 +89,11 @@ export interface PrompterSettings {
 }
 
 export interface RemoteSettings {
+  /**
+   * Cómo se enlaza el teléfono-mando: `relay` pasa por un servidor y `direct`
+   * conecta los dos aparatos entre sí por la red local, sin servidor.
+   */
+  mode: 'relay' | 'direct'
   /** Código de sala usado para emparejar con el teléfono-mando. */
   room: string
   /** URL del relay; vacío = el mismo servidor desde el que se abrió la app. */

@@ -410,7 +410,10 @@ export function Prompter() {
       {p.focusStyle === 'band' && (
         <div
           className="focus-band"
-          style={{ top: `calc(${focusY} - ${p.fontSize * p.lineHeight * 0.7}px)`, height: p.fontSize * p.lineHeight * 1.4 }}
+          style={{
+            top: `calc(${focusY} - ${p.fontSize * p.lineHeight * 0.7}px)`,
+            height: p.fontSize * p.lineHeight * 1.4,
+          }}
         />
       )}
       {(p.focusStyle === 'arrows' || p.focusStyle === 'both') && (

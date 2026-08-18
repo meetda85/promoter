@@ -60,9 +60,9 @@ function cleanStyle(style: string): string {
 export function sanitizeHtml(html: string): string {
   const doc = new DOMParser().parseFromString(html, 'text/html')
 
-  doc.querySelectorAll('script, style, iframe, object, embed, link, meta, noscript, svg').forEach(
-    (el) => el.remove(),
-  )
+  doc
+    .querySelectorAll('script, style, iframe, object, embed, link, meta, noscript, svg')
+    .forEach((el) => el.remove())
 
   const walk = (node: Element) => {
     for (const child of Array.from(node.children)) walk(child)

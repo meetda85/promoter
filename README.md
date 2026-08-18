@@ -12,9 +12,10 @@ App de teleprompter **instalable** (PWA) que funciona igual en Android y en iPho
 - **Espejo horizontal y vertical** para cristal de teleprompter.
 - **Control remoto Bluetooth** (pedales, pasapáginas, mandos de teleprompter, disparadores de
   selfies) con mapeo configurable y modo «aprender botón».
-- **Control remoto desde otro teléfono**: emparejamiento por QR, código de sala o dirección IP, con
-  el menú completo replicado — velocidad, tamaño, colores, espejo, marcadores y cambio de guion sin
-  tocar el teléfono que muestra el texto.
+- **Control remoto desde otro teléfono**, con el menú completo replicado — velocidad, tamaño,
+  colores, espejo, marcadores y cambio de guion sin tocar el teléfono que muestra el texto. Dos
+  formas de enlazarlos: a través de un servidor (QR, código de sala o IP) o **directamente entre los
+  dos teléfonos**, sin servidor y sin necesidad de Internet.
 
 ---
 
@@ -59,10 +60,13 @@ WebSocket abierta de forma permanente, y eso exige un servidor que se quede vivo
 *serverless* (Vercel, Netlify, Cloudflare Pages, GitHub Pages) ejecutan funciones que nacen y mueren
 con cada petición: sirven la app perfectamente, pero no pueden sostener el relay.
 
-| Alojamiento | Prompter, editor, Drive, mando Bluetooth | Mando desde otro teléfono |
-| --- | --- | --- |
-| Render / Railway / Fly.io / VPS | Sí | **Sí** |
-| Vercel / Netlify / Cloudflare / GitHub Pages | Sí | No (sin relay) |
+| Alojamiento | Prompter, editor, Drive, Bluetooth | Mando por servidor | Mando directo |
+| --- | --- | --- | --- |
+| Render / Railway / Fly.io / VPS | Sí | **Sí** | Sí |
+| Vercel / Netlify / Cloudflare / GitHub Pages | Sí | No (sin relay) | **Sí** |
+
+En un alojamiento estático sigues teniendo mando desde el otro teléfono usando el **enlace directo**
+descrito más abajo, que no necesita servidor.
 
 Si aun así prefieres Vercel, el repositorio trae `vercel.json` y el despliegue funciona sin tocar
 nada: importas el repositorio y listo. La app detecta que no hay relay, lo dice con claridad en
@@ -147,7 +151,11 @@ botones de volumen y multimedia» en el mismo panel.
 
 ### 2. Otro teléfono como mando
 
-En el teléfono que hace de teleprompter: ⚙ → **Mando de red**. Ahí están el código de sala y un QR.
+Hay dos modos, y se eligen en ⚙ → **Mando de red**.
+
+#### 2a. Por servidor
+
+El modo normal cuando la app está desplegada. Ahí están el código de sala y un QR.
 
 En el segundo teléfono, cualquiera de estas tres vías:
 
@@ -163,6 +171,30 @@ tocar el teléfono que está en el trípode.
 
 El enlace reconecta solo si la wifi se cae, y admite varios mandos a la vez (por ejemplo, dirección
 y realización).
+
+#### 2b. Directo, sin servidor ni Internet
+
+Los dos teléfonos se conectan **entre ellos** por WebRTC. No interviene ningún servidor: el control
+va punto a punto, y por eso funciona en una localización sin cobertura, en una wifi sin salida a
+Internet o en el punto de acceso de uno de los propios teléfonos.
+
+Como no hay servidor que los presente, el saludo inicial se hace con la cámara:
+
+1. En el teleprompter: ⚙ → Mando de red → **Directo, sin internet** → *Generar código de enlace*.
+2. En el mando: *Usar como mando* → **Escanear el código del teleprompter**. Aparece un segundo QR.
+3. En el teleprompter: *Escanear la respuesta del mando*. Listo.
+
+Si prefieres no usar la cámara, los dos códigos se pueden copiar y pegar (por ejemplo mandándolos
+por mensaje): ambas pantallas tienen botón de copiar y campo para pegar.
+
+Detalles que conviene saber:
+
+- El emparejamiento hay que repetirlo cada vez que se cierra la app, porque cada sesión negocia un
+  canal nuevo. Mejor hacerlo antes de montar el teléfono en el trípode.
+- La cámara sólo está disponible en direcciones seguras (https) o en `localhost`. Si abriste la app
+  por `http://192.168…`, usa el copiar/pegar del código en lugar del escaneo.
+- En wifis públicas con aislamiento entre dispositivos este modo no conecta; ahí toca el modo por
+  servidor.
 
 ### Usarlo fuera de la red local
 
@@ -223,6 +255,11 @@ Piezas que conviene conocer:
   que a 60 fps sería un derroche.
 - `web/src/lib/remote/protocol.ts` — mensajes del enlace y normalización de la dirección del
   servidor.
+- `web/src/lib/remote/link.ts` — contrato común de los dos transportes y empaquetado de los códigos
+  de emparejamiento (JSON → deflate → base64url) para que quepan en un QR.
+- `web/src/lib/remote/direct.ts` — enlace WebRTC punto a punto, sin servidor.
+- `web/src/state/hostBridge.ts` — lado teleprompter del mando, independiente del transporte: los dos
+  pueden estar activos a la vez.
 - `server/src/index.js` — relay por salas: un teleprompter y N mandos, sin interpretar el contenido.
 
 ## Comandos

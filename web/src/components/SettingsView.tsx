@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../state/useStore'
 import { exportAll, importAll } from '../lib/db'
-import { canInstall, isIOS, isStandalone, onInstallAvailability, promptInstall } from '../lib/install'
+import {
+  canInstall,
+  isIOS,
+  isStandalone,
+  onInstallAvailability,
+  promptInstall,
+} from '../lib/install'
 import type { HostLinkInfo } from '../state/useRemoteHost'
 import { PairPanel } from './PairPanel'
 import { BluetoothPanel } from './BluetoothPanel'

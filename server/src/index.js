@@ -54,9 +54,7 @@ async function serveFile(res, filePath, { immutable = false } = {}) {
   res.writeHead(200, {
     'Content-Type': MIME[ext] || 'application/octet-stream',
     'Content-Length': stat.size,
-    'Cache-Control': immutable
-      ? 'public, max-age=31536000, immutable'
-      : 'no-cache',
+    'Cache-Control': immutable ? 'public, max-age=31536000, immutable' : 'no-cache',
   })
   fs.createReadStream(filePath).pipe(res)
 }

@@ -21,9 +21,7 @@ export interface RemoteState {
   controlsVisible: boolean
 }
 
-export type HostMessage =
-  | { t: 'state'; state: RemoteState }
-  | { t: 'pong'; ts: number }
+export type HostMessage = { t: 'state'; state: RemoteState } | { t: 'pong'; ts: number }
 
 export type RemoteMessage =
   | { t: 'hello' }
@@ -36,7 +34,14 @@ export type RemoteMessage =
 
 /** Mensajes que añade el propio relay. */
 export type ServerMessage =
-  | { t: 'hello'; peerId: string; role: 'host' | 'remote'; room: string; hostOnline: boolean; remotes: number }
+  | {
+      t: 'hello'
+      peerId: string
+      role: 'host' | 'remote'
+      room: string
+      hostOnline: boolean
+      remotes: number
+    }
   | { t: 'peers'; hostOnline: boolean; remotes: number }
   | { t: 'error'; code: string; message: string }
 
@@ -49,7 +54,12 @@ export type AnyMessage = (HostMessage | RemoteMessage | ServerMessage) & {
  * Normaliza lo que el usuario escriba en el campo "servidor": acepta
  * `192.168.1.20`, `192.168.1.20:8080`, `http://…` o `ws://…`.
  */
-export function buildRelayUrl(serverUrl: string, room: string, role: 'host' | 'remote', name = ''): string {
+export function buildRelayUrl(
+  serverUrl: string,
+  room: string,
+  role: 'host' | 'remote',
+  name = '',
+): string {
   const params = `room=${encodeURIComponent(room)}&role=${role}&name=${encodeURIComponent(name)}`
   const raw = serverUrl.trim()
 

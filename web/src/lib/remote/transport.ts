@@ -1,7 +1,8 @@
 import type { AnyMessage } from './protocol'
 import { buildRelayUrl } from './protocol'
+import type { Link, LinkStatus } from './link'
 
-export type LinkStatus = 'off' | 'connecting' | 'open' | 'retrying' | 'error'
+export type { LinkStatus }
 
 export interface LinkOptions {
   serverUrl: string
@@ -24,7 +25,7 @@ export interface LinkOptions {
  * suspende el socket. Reconectar en silencio es más importante que cualquier
  * otra cosa de esta clase.
  */
-export class RemoteLink {
+export class RemoteLink implements Link {
   private ws: WebSocket | null = null
   private opts: LinkOptions
   private attempts = 0

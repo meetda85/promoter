@@ -32,8 +32,8 @@ body,
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 16px;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
@@ -110,7 +110,9 @@ button {
   font-weight: 600;
   font-size: 15px;
   border: 1px solid var(--line);
-  transition: transform 0.06s ease, background 0.15s ease;
+  transition:
+    transform 0.06s ease,
+    background 0.15s ease;
   user-select: none;
 }
 
@@ -922,4 +924,98 @@ button {
     margin: 0 auto;
     width: 100%;
   }
+}
+
+/* ------------------------------------------------------- lector de QR */
+
+.scanner {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+}
+
+.scanner video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scanner-frame {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: min(72vw, 320px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 3px solid var(--accent);
+  border-radius: 18px;
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.55);
+}
+
+.scanner-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 20px)
+    calc(var(--safe-left) + 16px);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+  color: #fff;
+}
+
+.pair-steps {
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pair-steps li {
+  position: relative;
+  padding: 0 0 12px 34px;
+  color: var(--fg-dim);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.pair-steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.pair-steps li[data-done='true']::before {
+  background: var(--ok);
+  border-color: transparent;
+  color: #06210f;
+  content: '✓';
+}
+
+.pair-steps li[data-active='true'] {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.qr.qr-auto {
+  width: min(76vw, 300px);
+}
+
+.qr.qr-auto canvas {
+  image-rendering: pixelated;
 }

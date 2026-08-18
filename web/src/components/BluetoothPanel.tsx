@@ -155,13 +155,22 @@ export function BluetoothPanel() {
               Elige la acción y después pulsa el botón físico que quieras usar.
             </div>
             <div className="row wrap" style={{ gap: 8 }}>
-              {(['toggle', 'restart', 'speedUp', 'speedDown', 'pageDown', 'pageUp', 'library', 'markerNext'] as ActionId[]).map(
-                (a) => (
-                  <button key={a} className="btn" onClick={() => startLearning(a)}>
-                    {ACTION_LABELS[a]}
-                  </button>
-                ),
-              )}
+              {(
+                [
+                  'toggle',
+                  'restart',
+                  'speedUp',
+                  'speedDown',
+                  'pageDown',
+                  'pageUp',
+                  'library',
+                  'markerNext',
+                ] as ActionId[]
+              ).map((a) => (
+                <button key={a} className="btn" onClick={() => startLearning(a)}>
+                  {ACTION_LABELS[a]}
+                </button>
+              ))}
             </div>
             <div className="field" style={{ marginTop: 14 }}>
               <label>Otra acción</label>

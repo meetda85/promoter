@@ -10,8 +10,16 @@ export const FONT_STACKS: { id: string; name: string; stack: string }[] = [
   { id: 'grotesk', name: 'Grotesca', stack: '"Helvetica Neue", Helvetica, Arial, sans-serif' },
   { id: 'serif', name: 'Serif', stack: 'Georgia, "Times New Roman", Times, serif' },
   { id: 'slab', name: 'Slab', stack: '"Rockwell", "Courier Bold", Georgia, serif' },
-  { id: 'mono', name: 'Monoespaciada', stack: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace' },
-  { id: 'rounded', name: 'Redondeada', stack: '"SF Pro Rounded", "Varela Round", Verdana, sans-serif' },
+  {
+    id: 'mono',
+    name: 'Monoespaciada',
+    stack: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+  },
+  {
+    id: 'rounded',
+    name: 'Redondeada',
+    stack: '"SF Pro Rounded", "Varela Round", Verdana, sans-serif',
+  },
 ]
 
 /** Genera un código de sala corto y legible en voz alta. */
@@ -130,6 +138,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
     hideControlsDelay: 2500,
   },
   remote: {
+    mode: 'relay',
     room: '',
     serverUrl: '',
     autoConnect: true,

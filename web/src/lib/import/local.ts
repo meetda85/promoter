@@ -9,7 +9,12 @@ export interface ImportedDoc {
 export const ACCEPTED_EXTENSIONS = '.txt,.md,.markdown,.rtf,.html,.htm,.docx,.fountain,.text'
 
 function baseName(name: string): string {
-  return name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'Guion importado'
+  return (
+    name
+      .replace(/\.[^.]+$/, '')
+      .replace(/[_-]+/g, ' ')
+      .trim() || 'Guion importado'
+  )
 }
 
 /** Markdown mínimo: encabezados, negrita, cursiva y separadores. */

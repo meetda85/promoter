@@ -38,7 +38,13 @@ export function Library({ link }: { link: HostLinkInfo }) {
   }
 
   const remoteTone =
-    link.status === 'open' ? (link.remotes > 0 ? 'ok' : 'warn') : link.status === 'off' ? 'idle' : 'bad'
+    link.status === 'open'
+      ? link.remotes > 0
+        ? 'ok'
+        : 'warn'
+      : link.status === 'off'
+        ? 'idle'
+        : 'bad'
 
   return (
     <div className="app">
@@ -56,7 +62,11 @@ export function Library({ link }: { link: HostLinkInfo }) {
               : 'Sala lista'
             : 'Sin enlace'}
         </button>
-        <button className="btn ghost icon" onClick={() => setSheet('settings')} aria-label="Ajustes">
+        <button
+          className="btn ghost icon"
+          onClick={() => setSheet('settings')}
+          aria-label="Ajustes"
+        >
           ⚙
         </button>
       </div>
@@ -144,7 +154,8 @@ export function Library({ link }: { link: HostLinkInfo }) {
             disabled={busy}
             onClick={() => fileInput.current?.click()}
           >
-            {busy ? <span className="spinner" /> : '📄'} Importar archivo (.txt .md .docx .rtf .html)
+            {busy ? <span className="spinner" /> : '📄'} Importar archivo (.txt .md .docx .rtf
+            .html)
           </button>
           <button className="btn wide big" onClick={() => setSheet('drive')}>
             ☁️ Google Drive

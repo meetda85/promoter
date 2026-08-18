@@ -16,11 +16,7 @@ export function htmlToText(html: string): string {
 
 /** Convierte texto plano en HTML respetando párrafos y líneas sueltas. */
 export function textToHtml(text: string): string {
-  const escape = (s: string) =>
-    s
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
+  const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   const blocks = text
     .replace(/\r\n?/g, '\n')
     .split(/\n{2,}/)
@@ -30,7 +26,12 @@ export function textToHtml(text: string): string {
   return blocks
     .map((block) => {
       // Una línea corta en MAYÚSCULAS suele ser un rótulo de sección.
-      if (block.length < 60 && !block.includes('\n') && block === block.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(block)) {
+      if (
+        block.length < 60 &&
+        !block.includes('\n') &&
+        block === block.toUpperCase() &&
+        /[A-ZÁÉÍÓÚÑ]/.test(block)
+      ) {
         return `<h2>${escape(block)}</h2>`
       }
       return `<p>${escape(block).replace(/\n/g, '<br />')}</p>`
@@ -82,10 +83,7 @@ export function scrollPxPerSecond(opts: {
   return (linesPerMinute / 60) * linePx
 }
 
-export function estimateSeconds(opts: {
-  pxPerSecond: number
-  scrollableHeight: number
-}): number {
+export function estimateSeconds(opts: { pxPerSecond: number; scrollableHeight: number }): number {
   if (opts.pxPerSecond <= 0) return 0
   return opts.scrollableHeight / opts.pxPerSecond
 }

@@ -15,6 +15,7 @@ export default function App() {
   const init = useStore((s) => s.init)
   const setView = useStore((s) => s.setView)
   const mediaKeys = useStore((s) => s.settings.remote.mediaKeys)
+  const linkMode = useStore((s) => s.settings.remote.mode)
 
   const [booted, setBooted] = useState(false)
 
@@ -26,7 +27,9 @@ export default function App() {
     })
   }, [init, setView])
 
-  const link = useRemoteHost(view !== 'remote')
+  // En modo directo no se abre el relay: evita reintentos inútiles cuando la
+  // app se sirve desde un alojamiento estático.
+  const link = useRemoteHost(view !== 'remote' && linkMode === 'relay')
   useKeyRemote()
   useMediaKeyRemote(mediaKeys)
 

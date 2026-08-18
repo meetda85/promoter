@@ -449,9 +449,7 @@ export function ControlPanel({
               }}
               onClick={() => c.select(s.id)}
             >
-              <span
-                style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-              >
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {s.title}
               </span>
               <span className="muted">{s.wordCount} pal.</span>

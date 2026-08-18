@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '../state/useStore'
-import { importDriveFile, isSignedIn, listFiles, signIn, signOut, type DriveFile } from '../lib/import/drive'
+import {
+  importDriveFile,
+  isSignedIn,
+  listFiles,
+  signIn,
+  signOut,
+  type DriveFile,
+} from '../lib/import/drive'
 
 export function DrivePanel({ onImported }: { onImported: () => void }) {
   const clientId = useStore((s) => s.settings.drive.clientId)

@@ -57,7 +57,11 @@ export function Editor({ id }: { id: string }) {
     if (!dirty || !editor || !script) return
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(() => {
-      void saveScript({ ...script, title: title.trim() || 'Guion sin título', html: editor.getHTML() })
+      void saveScript({
+        ...script,
+        title: title.trim() || 'Guion sin título',
+        html: editor.getHTML(),
+      })
       setDirty(false)
     }, 900)
     return () => {
@@ -80,7 +84,11 @@ export function Editor({ id }: { id: string }) {
 
   const saveNow = async () => {
     if (!editor) return
-    await saveScript({ ...script, title: title.trim() || 'Guion sin título', html: editor.getHTML() })
+    await saveScript({
+      ...script,
+      title: title.trim() || 'Guion sin título',
+      html: editor.getHTML(),
+    })
     setDirty(false)
   }
 
@@ -121,7 +129,11 @@ export function Editor({ id }: { id: string }) {
       </div>
 
       <div className="toolbar">
-        <button className="tool" data-on={on('bold')} onClick={() => editor?.chain().focus().toggleBold().run()}>
+        <button
+          className="tool"
+          data-on={on('bold')}
+          onClick={() => editor?.chain().focus().toggleBold().run()}
+        >
           B
         </button>
         <button
@@ -152,7 +164,14 @@ export function Editor({ id }: { id: string }) {
           <span style={{ color: 'var(--accent)' }}>A</span>
         </button>
         <button className="tool" onClick={() => setColorSheet('highlight')} title="Resaltado">
-          <span style={{ background: 'var(--accent)', color: '#17130a', padding: '0 4px', borderRadius: 4 }}>
+          <span
+            style={{
+              background: 'var(--accent)',
+              color: '#17130a',
+              padding: '0 4px',
+              borderRadius: 4,
+            }}
+          >
             A
           </span>
         </button>
@@ -170,10 +189,19 @@ export function Editor({ id }: { id: string }) {
         >
           A↓
         </button>
-        <button className="tool" onClick={() => editor?.chain().focus().unsetFontSize().run()} title="Tamaño normal">
+        <button
+          className="tool"
+          onClick={() => editor?.chain().focus().unsetFontSize().run()}
+          title="Tamaño normal"
+        >
           A=
         </button>
-        <button className="tool" data-on={on('note')} onClick={() => editor?.chain().focus().toggleNote().run()} title="Nota (no se lee)">
+        <button
+          className="tool"
+          data-on={on('note')}
+          onClick={() => editor?.chain().focus().toggleNote().run()}
+          title="Nota (no se lee)"
+        >
           ✎
         </button>
         <button

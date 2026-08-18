@@ -348,7 +348,10 @@ export const useStore = create<State>((set, get) => ({
       case 'prevScript': {
         const list = s.scripts
         if (!list.length) break
-        const i = Math.max(0, list.findIndex((x) => x.id === s.currentId))
+        const i = Math.max(
+          0,
+          list.findIndex((x) => x.id === s.currentId),
+        )
         const next = list[(i + (action === 'nextScript' ? 1 : -1) + list.length) % list.length]
         s.openPrompter(next.id)
         break
