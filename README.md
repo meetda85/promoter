@@ -12,10 +12,13 @@ App de teleprompter **instalable** (PWA) que funciona igual en Android y en iPho
 - **Espejo horizontal y vertical** para cristal de teleprompter.
 - **Control remoto Bluetooth** (pedales, pasapáginas, mandos de teleprompter, disparadores de
   selfies) con mapeo configurable y modo «aprender botón».
-- **Control remoto desde otro teléfono**, con el menú completo replicado — velocidad, tamaño,
-  colores, espejo, marcadores y cambio de guion sin tocar el teléfono que muestra el texto. Dos
-  formas de enlazarlos: a través de un servidor (QR, código de sala o IP) o **directamente entre los
-  dos teléfonos**, sin servidor y sin necesidad de Internet.
+- **Control remoto desde otro teléfono o tableta**, con el menú completo replicado — velocidad,
+  tamaño, colores, espejo, marcadores y cambio de guion sin tocar el aparato que muestra el texto.
+  Dos formas de enlazarlos: a través de un servidor (QR, código de sala o IP) o **directamente entre
+  los dos**, sin servidor y sin necesidad de Internet.
+- **Edición del guion a distancia**: desde el mando se abre el mismo editor completo, se corrige el
+  texto, se crean guiones nuevos y se ponen en pantalla. Cómodo con una tableta de mando y el
+  teléfono ya montado en el trípode.
 
 ---
 
@@ -149,9 +152,19 @@ Perfil universal por defecto:
 Algunos mandos envían teclas multimedia en lugar de teclas normales. Para esos, activa «Capturar
 botones de volumen y multimedia» en el mismo panel.
 
-### 2. Otro teléfono como mando
+### 2. Otro teléfono o tableta como mando
 
-Hay dos modos, y se eligen en ⚙ → **Mando de red**.
+Vale cualquier combinación: teléfono + tableta, dos teléfonos, o un portátil de mando. Los dos
+aparatos usan la misma app; el que hace de mando entra en «Usar como mando».
+
+Hay dos modos de enlazarlos, y se eligen en ⚙ → **Mando de red**.
+
+> **¿Y por Bluetooth entre los dos aparatos?** No es posible desde una app web: el navegador puede
+> *recibir* pulsaciones de un mando Bluetooth que se anuncie como teclado, pero no puede abrir un
+> canal Bluetooth entre dos teléfonos (y iOS ni siquiera expone Web Bluetooth). El equivalente
+> práctico es el **enlace directo** de más abajo: si no hay wifi, activas el punto de acceso de uno
+> de los dos aparatos, el otro se conecta a él y quedan enlazados entre ellos sin Internet ni
+> servidor.
 
 #### 2a. Por servidor
 
@@ -168,6 +181,12 @@ Desde el mando se controla **todo**: play/pausa, cuenta atrás, velocidad (manua
 minuto), tamaño y tipografía, interlineado, ancho y alineación, los diez contrastes, espejo,
 posición de la guía de lectura, salto a marcadores, barra de posición y **cambio de guion** — sin
 tocar el teléfono que está en el trípode.
+
+En la pestaña **Guiones** del mando, además de elegir cuál se lee, cada guion tiene botón de
+**editar** y de **borrar**, y hay uno de **guion nuevo**. Al editar se abre el mismo editor que en
+el teleprompter, con toda la barra de formato: el guion viaja por el enlace, se corrige en el mando
+y se guarda de vuelta en el teléfono automáticamente. El botón *Ponerlo* lo deja además listo en
+pantalla. Funciona igual por servidor que por enlace directo.
 
 El enlace reconecta solo si la wifi se cae, y admite varios mandos a la vez (por ejemplo, dirección
 y realización).

@@ -57,7 +57,12 @@ export function useRemoteHost(enabled = true): HostLinkInfo {
           const remotes = (msg as { remotes?: number }).remotes
           if (typeof remotes === 'number') setInfo((prev) => ({ ...prev, remotes }))
         }
-        handleHostMessage(msg, () => link.send({ t: 'state', state: snapshot() }))
+        handleHostMessage(
+          msg,
+          () => link.send({ t: 'state', state: snapshot() }),
+          // El guion completo se manda sólo al mando que lo pidió.
+          (payload) => link.send({ ...payload, to: msg.peerId }),
+        )
       },
     })
     linkRef.current = link

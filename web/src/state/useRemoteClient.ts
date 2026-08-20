@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { RemoteLink, type LinkStatus } from '../lib/remote/transport'
-import type { RemoteMessage, RemoteState } from '../lib/remote/protocol'
+import type { RemoteMessage, RemoteScriptDoc, RemoteState } from '../lib/remote/protocol'
 
 export interface ClientLink {
   status: LinkStatus
   detail?: string
   hostOnline: boolean
   state: RemoteState | null
+  /** Último guion recibido del teleprompter, para editarlo desde aquí. */
+  script: RemoteScriptDoc | null
+  clearScript: () => void
   send: (msg: RemoteMessage) => void
   reconnect: () => void
 }
@@ -17,6 +20,7 @@ export function useRemoteClient(serverUrl: string, room: string, enabled: boolea
   const [detail, setDetail] = useState<string | undefined>()
   const [hostOnline, setHostOnline] = useState(false)
   const [state, setState] = useState<RemoteState | null>(null)
+  const [script, setScript] = useState<RemoteScriptDoc | null>(null)
   const linkRef = useRef<RemoteLink | null>(null)
 
   useEffect(() => {
@@ -43,6 +47,9 @@ export function useRemoteClient(serverUrl: string, room: string, enabled: boolea
           case 'state':
             setState((msg as { state: RemoteState }).state)
             setHostOnline(true)
+            break
+          case 'script':
+            setScript((msg as { script: RemoteScriptDoc | null }).script)
             break
           case 'hello':
           case 'peers':
@@ -74,5 +81,7 @@ export function useRemoteClient(serverUrl: string, room: string, enabled: boolea
     linkRef.current?.connect()
   }, [])
 
-  return { status, detail, hostOnline, state, send, reconnect }
+  const clearScript = useCallback(() => setScript(null), [])
+
+  return { status, detail, hostOnline, state, script, clearScript, send, reconnect }
 }

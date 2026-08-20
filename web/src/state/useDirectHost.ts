@@ -37,7 +37,11 @@ export const useDirectHost = create<DirectHostState>((set) => ({
       link = new DirectLink({
         onStatus: (status, detail) => set({ status, detail }),
         onMessage: (msg) =>
-          handleHostMessage(msg, () => link?.send({ t: 'state', state: snapshot() })),
+          handleHostMessage(
+            msg,
+            () => link?.send({ t: 'state', state: snapshot() }),
+            (payload) => link?.send(payload),
+          ),
       })
       unregister = registerHostLink(link)
       const code = await link.createOffer()

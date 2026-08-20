@@ -21,7 +21,17 @@ export interface RemoteState {
   controlsVisible: boolean
 }
 
-export type HostMessage = { t: 'state'; state: RemoteState } | { t: 'pong'; ts: number }
+/** Guion completo, tal y como viaja hacia el mando para poder editarlo. */
+export interface RemoteScriptDoc {
+  id: string
+  title: string
+  html: string
+}
+
+export type HostMessage =
+  | { t: 'state'; state: RemoteState }
+  | { t: 'script'; script: RemoteScriptDoc | null }
+  | { t: 'pong'; ts: number }
 
 export type RemoteMessage =
   | { t: 'hello' }
@@ -31,6 +41,10 @@ export type RemoteMessage =
   | { t: 'view'; view: View }
   | { t: 'seek'; ratio: number }
   | { t: 'jumpMarker'; index: number }
+  | { t: 'getScript'; id: string }
+  | { t: 'saveScript'; id: string; title: string; html: string }
+  | { t: 'newScript' }
+  | { t: 'deleteScript'; id: string }
 
 /** Mensajes que añade el propio relay. */
 export type ServerMessage =

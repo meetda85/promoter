@@ -3,11 +3,12 @@ import { useStore } from '../state/useStore'
 import { useRemoteClient } from '../state/useRemoteClient'
 import { useDirectClient } from '../state/useDirectClient'
 import { ControlPanel, type Controller } from './ControlPanel'
+import { ScriptEditor } from './ScriptEditor'
 import { QrCode } from './QrCode'
 import { QrScanner } from './QrScanner'
 import { formatTime } from '../lib/text'
 import type { ActionId } from '../lib/types'
-import type { RemoteMessage, RemoteState } from '../lib/remote/protocol'
+import type { RemoteMessage, RemoteScriptDoc, RemoteState } from '../lib/remote/protocol'
 import type { LinkStatus } from '../lib/remote/link'
 
 function tap() {
@@ -41,6 +42,8 @@ export function RemoteControl() {
   const [draftRoom, setDraftRoom] = useState(room)
   const [draftServer, setDraftServer] = useState(server)
   const [scanning, setScanning] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [pendingNew, setPendingNew] = useState(false)
   const [pasting, setPasting] = useState(false)
   const [pasted, setPasted] = useState('')
 
@@ -70,10 +73,22 @@ export function RemoteControl() {
   // Al salir del mando se sueltan los recursos del enlace directo.
   useEffect(() => () => useDirectClient.getState().stop(), [])
 
+  // El guion recién creado llega por el enlace: en cuanto aparece, se abre.
+  useEffect(() => {
+    if (!pendingNew) return
+    const doc = mode === 'direct' ? direct.script : relay.script
+    if (doc) {
+      setEditingId(doc.id)
+      setPendingNew(false)
+    }
+  }, [pendingNew, mode, direct.script, relay.script])
+
   const live: {
     status: LinkStatus
     detail?: string
     state: RemoteState | null
+    script: RemoteScriptDoc | null
+    clearScript: () => void
     hostOnline: boolean
     send: (msg: RemoteMessage) => void
     retry?: () => void
@@ -83,6 +98,8 @@ export function RemoteControl() {
           status: direct.status,
           detail: direct.detail || direct.error || undefined,
           state: direct.state,
+          script: direct.script,
+          clearScript: direct.clearScript,
           hostOnline: direct.status === 'open',
           send: direct.send,
         }
@@ -90,6 +107,8 @@ export function RemoteControl() {
           status: relay.status,
           detail: relay.detail,
           state: relay.state,
+          script: relay.script,
+          clearScript: relay.clearScript,
           hostOnline: relay.hostOnline,
           send: relay.send,
           retry: relay.reconnect,
@@ -114,6 +133,19 @@ export function RemoteControl() {
     },
     seek: (ratio) => live.send({ t: 'seek', ratio }),
     jumpMarker: (index) => live.send({ t: 'jumpMarker', index }),
+    onEdit: (id) => {
+      tap()
+      live.clearScript()
+      setEditingId(id)
+      live.send({ t: 'getScript', id })
+    },
+    onNew: () => {
+      tap()
+      live.clearScript()
+      setPendingNew(true)
+      live.send({ t: 'newScript' })
+    },
+    onDelete: (id) => live.send({ t: 'deleteScript', id }),
   }
 
   const back = (
@@ -351,6 +383,55 @@ export function RemoteControl() {
           />
         )}
       </div>
+    )
+  }
+
+  /* ------------------------------------------------- editar un guion */
+
+  if (editingId) {
+    const doc = live.script && live.script.id === editingId ? live.script : null
+
+    if (!doc) {
+      return (
+        <div className="app">
+          <div className="topbar">
+            <button
+              className="btn ghost icon"
+              onClick={() => setEditingId(null)}
+              aria-label="Volver"
+            >
+              ‹
+            </button>
+            <h1>Abriendo el guion…</h1>
+          </div>
+          <div className="scroll-area">
+            <div className="card row">
+              <span className="spinner" />
+              <span className="muted">Pidiéndoselo al teleprompter…</span>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <ScriptEditor
+        docKey={doc.id}
+        initialTitle={doc.title}
+        initialHtml={doc.html}
+        statusHint="Guardado en el prompter"
+        onSave={(title, html) => live.send({ t: 'saveScript', id: doc.id, title, html })}
+        onBack={() => {
+          live.clearScript()
+          setEditingId(null)
+        }}
+        onPrimary={() => {
+          live.send({ t: 'select', id: doc.id })
+          live.clearScript()
+          setEditingId(null)
+        }}
+        primaryLabel="Ponerlo"
+      />
     )
   }
 

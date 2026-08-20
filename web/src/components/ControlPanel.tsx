@@ -26,6 +26,10 @@ export interface Controller {
   select: (id: string) => void
   seek: (ratio: number) => void
   jumpMarker: (index: number) => void
+  /** Gestión de guiones. Si falta alguna, su botón no se muestra. */
+  onEdit?: (id: string) => void
+  onNew?: () => void
+  onDelete?: (id: string) => void
 }
 
 type Tab = 'play' | 'text' | 'look' | 'read' | 'scripts'
@@ -437,23 +441,52 @@ export function ControlPanel({
 
       {tab === 'scripts' && (
         <div className="card">
-          {c.scripts.length === 0 && <div className="muted">No hay guiones todavía.</div>}
-          {c.scripts.map((s) => (
-            <button
-              key={s.id}
-              className="btn wide"
-              style={{
-                justifyContent: 'space-between',
-                marginBottom: 8,
-                borderColor: s.id === c.currentId ? 'var(--accent)' : undefined,
-              }}
-              onClick={() => c.select(s.id)}
-            >
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {s.title}
-              </span>
-              <span className="muted">{s.wordCount} pal.</span>
+          {c.onNew && (
+            <button className="btn wide" style={{ marginBottom: 10 }} onClick={() => c.onNew?.()}>
+              + Guion nuevo
             </button>
+          )}
+
+          {c.scripts.length === 0 && <div className="muted">No hay guiones todavía.</div>}
+
+          {c.scripts.map((s) => (
+            <div className="row" key={s.id} style={{ gap: 6, marginBottom: 8 }}>
+              <button
+                className="btn grow"
+                style={{
+                  justifyContent: 'space-between',
+                  borderColor: s.id === c.currentId ? 'var(--accent)' : undefined,
+                }}
+                onClick={() => c.select(s.id)}
+              >
+                <span
+                  style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                >
+                  {s.title}
+                </span>
+                <span className="muted">{s.wordCount} pal.</span>
+              </button>
+              {c.onEdit && (
+                <button
+                  className="btn icon"
+                  aria-label={`Editar ${s.title}`}
+                  onClick={() => c.onEdit?.(s.id)}
+                >
+                  ✎
+                </button>
+              )}
+              {c.onDelete && (
+                <button
+                  className="btn icon danger"
+                  aria-label={`Borrar ${s.title}`}
+                  onClick={() => {
+                    if (confirm(`¿Borrar «${s.title}»?`)) c.onDelete?.(s.id)
+                  }}
+                >
+                  🗑
+                </button>
+              )}
+            </div>
           ))}
         </div>
       )}

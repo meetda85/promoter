@@ -356,6 +356,16 @@ export function Prompter() {
     },
     seek: (ratio) => sendPrompterCommand({ type: 'jumpRatio', ratio }),
     jumpMarker: (index) => sendPrompterCommand({ type: 'jumpMarker', index }),
+    onEdit: (id) => {
+      setPanel(false)
+      useStore.getState().openEditor(id)
+    },
+    onNew: async () => {
+      const created = await useStore.getState().createScript({ title: 'Guion sin título' })
+      setPanel(false)
+      useStore.getState().openEditor(created.id)
+    },
+    onDelete: (id) => void useStore.getState().removeScript(id),
   }
 
   const playing = status === 'playing' || status === 'countdown'

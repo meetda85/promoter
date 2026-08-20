@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { DirectLink } from '../lib/remote/direct'
 import type { LinkStatus } from '../lib/remote/link'
-import type { RemoteMessage, RemoteState } from '../lib/remote/protocol'
+import type { RemoteMessage, RemoteScriptDoc, RemoteState } from '../lib/remote/protocol'
 
 interface DirectClientState {
   status: LinkStatus
@@ -9,6 +9,9 @@ interface DirectClientState {
   /** Código de respuesta que el teleprompter tiene que escanear. */
   answerCode: string | null
   state: RemoteState | null
+  /** Último guion recibido del teleprompter, para editarlo desde aquí. */
+  script: RemoteScriptDoc | null
+  clearScript: () => void
   busy: boolean
   error: string | null
   accept: (offerCode: string) => Promise<void>
@@ -23,6 +26,7 @@ export const useDirectClient = create<DirectClientState>((set, get) => ({
   status: 'off',
   answerCode: null,
   state: null,
+  script: null,
   busy: false,
   error: null,
 
@@ -37,6 +41,8 @@ export const useDirectClient = create<DirectClientState>((set, get) => ({
         },
         onMessage: (msg) => {
           if (msg.t === 'state') set({ state: (msg as { state: RemoteState }).state })
+          if (msg.t === 'script')
+            set({ script: (msg as { script: RemoteScriptDoc | null }).script })
         },
       })
       const code = await link.acceptOffer(offerCode)
@@ -50,9 +56,13 @@ export const useDirectClient = create<DirectClientState>((set, get) => ({
     link?.send(msg)
   },
 
+  clearScript() {
+    set({ script: null })
+  },
+
   stop() {
     link?.close()
     link = null
-    set({ status: 'off', answerCode: null, state: null, error: null, busy: false })
+    set({ status: 'off', answerCode: null, state: null, script: null, error: null, busy: false })
   },
 }))
