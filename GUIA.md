@@ -122,7 +122,8 @@ Ahora, **desde la tableta**, prueba a:
 
 - Darle a **Reproducir** y ajustar el ritmo con *Más lento / Más rápido*.
 - Pestaña **Texto**: cambiar el tamaño de letra.
-- Pestaña **Color**: cambiar el contraste y activar el **espejo** si usas cristal de teleprompter.
+- Pestaña **Color**: cambiar el contraste, activar el **espejo** si usas cristal de teleprompter y
+  **girar la imagen** 90°, 180° o 270° si el teléfono va de lado en el soporte.
 - Pestaña **Guiones**: elegir otro guion, o pulsar ✎ para corregir el texto sin tocar el teléfono.
 
 ---

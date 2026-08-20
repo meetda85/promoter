@@ -500,6 +500,15 @@ button {
   touch-action: none;
 }
 
+/* El escenario lleva el giro y, cuando toca, intercambia los lados de la
+   pantalla. Todo lo que debe girar con el texto vive dentro. */
+.prompter-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  overflow: hidden;
+}
+
 .prompter-scroll {
   position: absolute;
   inset: 0;
@@ -513,7 +522,6 @@ button {
 
 .prompter-content {
   margin: 0 auto;
-  padding-bottom: 60vh;
   filter: brightness(var(--pm-brightness, 1));
   /* Con letras muy grandes una sola palabra puede no caber a lo ancho:
      mejor partirla con guion que dejarla cortada por el borde. */

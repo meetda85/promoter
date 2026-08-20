@@ -52,6 +52,7 @@ export const BUILT_IN_PROFILES: RemoteProfile[] = [
       { code: 'PageUp', action: 'pageUp', label: 'Retroceder' },
       { code: 'KeyR', action: 'restart', label: 'Reiniciar' },
       { code: 'KeyM', action: 'mirrorH', label: 'Espejo' },
+      { code: 'KeyG', action: 'rotateNext', label: 'Girar 90°' },
       { code: 'KeyF', action: 'fullscreen', label: 'Pantalla completa' },
       { code: 'KeyC', action: 'themeNext', label: 'Cambiar contraste' },
       { code: 'KeyH', action: 'toggleControls', label: 'Ocultar controles' },
@@ -119,6 +120,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
 
     mirrorH: false,
     mirrorV: false,
+    rotation: 0,
     theme: 'classic',
     customBg: '#000000',
     customFg: '#ffffff',
@@ -169,6 +171,7 @@ export const ACTION_LABELS: Record<string, string> = {
   markerPrev: 'Marcador anterior',
   mirrorH: 'Espejo horizontal',
   mirrorV: 'Espejo vertical',
+  rotateNext: 'Girar 90°',
   themeNext: 'Siguiente contraste',
   toggleControls: 'Mostrar / ocultar controles',
   library: 'Volver a la biblioteca',

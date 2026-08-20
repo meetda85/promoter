@@ -9,7 +9,8 @@ App de teleprompter **instalable** (PWA) que funciona igual en Android y en iPho
   «notas» que se ven al editar pero no al leer.
 - **Diez presets de contraste** (no sólo blanco sobre negro) más color personalizado, atenuación del
   texto y oscurecido del fondo.
-- **Espejo horizontal y vertical** para cristal de teleprompter.
+- **Espejo horizontal y vertical** para cristal de teleprompter, y **giro de la imagen** a 90°,
+  180° o 270° para el teléfono montado de lado en el soporte.
 - **Control remoto Bluetooth** (pedales, pasapáginas, mandos de teleprompter, disparadores de
   selfies) con mapeo configurable y modo «aprender botón».
 - **Control remoto desde otro teléfono o tableta**, con el menú completo replicado — velocidad,
@@ -146,6 +147,7 @@ Perfil universal por defecto:
 | ← / → · Re Pág / Av Pág | Retroceder / avanzar una pantalla |
 | R | Volver al principio |
 | M | Espejo |
+| G | Girar la imagen 90° |
 | C | Siguiente contraste |
 | + / − | Tamaño de letra |
 | [ / ] | Marcador anterior / siguiente |

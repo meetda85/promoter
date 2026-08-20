@@ -39,6 +39,11 @@ export function Prompter() {
   const currentId = useStore((s) => s.currentId)
 
   const [panel, setPanel] = useState(false)
+  /** Lados de la pantalla; con el giro de 90° el escenario los intercambia. */
+  const [viewport, setViewport] = useState({ w: 0, h: 0 })
+  const rotated = p.rotation === 90 || p.rotation === 270
+  /** Alto útil de lectura: con el giro de 90° pasa a ser el ancho de pantalla. */
+  const stageH = (rotated ? viewport.w : viewport.h) || 0
 
   const rootRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -66,7 +71,14 @@ export function Prompter() {
     const root = rootRef.current
     const content = contentRef.current
     if (!root || !content) return
-    const view = root.clientHeight
+    // Sólo si cambian de verdad: `measure` la llama el ResizeObserver, y un
+    // objeto nuevo en cada pasada provocaría un ciclo de repintado sin fin.
+    const w = root.clientWidth
+    const h = root.clientHeight
+    setViewport((prev) => (prev.w === w && prev.h === h ? prev : { w, h }))
+    // Girado 90°, lo que hace de «alto» para la lectura es el ancho de la
+    // pantalla: el texto corre a lo largo del lado más corto.
+    const view = rotated ? root.clientWidth : root.clientHeight
     const contentH = content.scrollHeight
     const padTop = (p.paddingTop / 100) * view
     const padBottom = view * 0.6
@@ -79,7 +91,7 @@ export function Prompter() {
     markerTops.current = Array.from(content.querySelectorAll('h1, h2, h3')).map(
       (el) => (el as HTMLElement).offsetTop,
     )
-  }, [p.paddingTop])
+  }, [p.paddingTop, rotated])
 
   useEffect(() => {
     measure()
@@ -287,7 +299,13 @@ export function Prompter() {
 
   /* ------------------------------------------------------------- gestos */
 
-  const drag = useRef<{ id: number; y: number; startOffset: number; moved: boolean } | null>(null)
+  const drag = useRef<{
+    id: number
+    x: number
+    y: number
+    startOffset: number
+    moved: boolean
+  } | null>(null)
   const pinch = useRef<{ dist: number; size: number } | null>(null)
   const pointers = useRef(new Map<number, { x: number; y: number }>())
 
@@ -300,7 +318,13 @@ export function Prompter() {
       drag.current = null
       return
     }
-    drag.current = { id: e.pointerId, y: e.clientY, startOffset: offset.current, moved: false }
+    drag.current = {
+      id: e.pointerId,
+      x: e.clientX,
+      y: e.clientY,
+      startOffset: offset.current,
+      moved: false,
+    }
     ;(e.target as Element).setPointerCapture?.(e.pointerId)
   }
 
@@ -319,11 +343,16 @@ export function Prompter() {
 
     const d = drag.current
     if (!d || d.id !== e.pointerId) return
+    const dx = e.clientX - d.x
     const dy = e.clientY - d.y
-    if (Math.abs(dy) > 6) d.moved = true
+    if (Math.abs(dy) > 6 || Math.abs(dx) > 6) d.moved = true
     if (d.moved) {
-      const dir = p.mirrorV ? -1 : 1
-      offset.current = Math.max(0, Math.min(metrics.current.max, d.startOffset - dy * dir))
+      // El texto sigue al dedo por el eje en el que corre, que cambia con el
+      // giro; el espejo vertical invierte ese eje.
+      const sign = p.mirrorV ? -1 : 1
+      const delta =
+        p.rotation === 90 ? dx : p.rotation === 180 ? dy : p.rotation === 270 ? -dx : -dy
+      offset.current = Math.max(0, Math.min(metrics.current.max, d.startOffset + delta * sign))
       apply()
     }
   }
@@ -390,52 +419,71 @@ export function Prompter() {
       onPointerCancel={onPointerUp}
     >
       <div
-        className="prompter-scroll"
+        className="prompter-stage"
         style={{
-          transform: `scale(${p.mirrorH ? -1 : 1}, ${p.mirrorV ? -1 : 1})`,
+          width: rotated ? viewport.h : viewport.w || '100%',
+          height: rotated ? viewport.w : viewport.h || '100%',
+          transform: `translate(-50%, -50%) rotate(${p.rotation}deg)`,
         }}
       >
         <div
-          ref={contentRef}
-          className="prompter-content"
+          className="prompter-scroll"
           style={{
-            width: `${p.contentWidth}%`,
-            paddingTop: `${p.paddingTop}vh`,
-            fontFamily: p.fontFamily,
-            fontSize: p.fontSize,
-            lineHeight: p.lineHeight,
-            letterSpacing: p.letterSpacing,
-            fontWeight: p.fontWeight,
-            textAlign: p.textAlign,
+            transform: `scale(${p.mirrorH ? -1 : 1}, ${p.mirrorV ? -1 : 1})`,
           }}
-          dangerouslySetInnerHTML={{ __html: script?.html || '<p>Sin guion seleccionado.</p>' }}
-        />
+        >
+          <div
+            ref={contentRef}
+            className="prompter-content"
+            style={{
+              width: `${p.contentWidth}%`,
+              // En píxeles y no en `vh`: dentro del escenario girado, `vh`
+              // seguiría midiendo el alto de la pantalla, no el del escenario.
+              // Y un porcentaje de padding se resolvería contra el ancho.
+              paddingTop: stageH ? `${(p.paddingTop / 100) * stageH}px` : `${p.paddingTop}vh`,
+              paddingBottom: stageH ? `${stageH * 0.6}px` : '60vh',
+              fontFamily: p.fontFamily,
+              fontSize: p.fontSize,
+              lineHeight: p.lineHeight,
+              letterSpacing: p.letterSpacing,
+              fontWeight: p.fontWeight,
+              textAlign: p.textAlign,
+            }}
+            dangerouslySetInnerHTML={{ __html: script?.html || '<p>Sin guion seleccionado.</p>' }}
+          />
+        </div>
+
+        {p.bgDim > 0 && <div className="prompter-dim" style={{ opacity: p.bgDim }} />}
+
+        {/* Las guías viven dentro del escenario: giran con el texto, que es
+            a lo que apuntan, pero no se voltean con el espejo. */}
+        {(p.focusStyle === 'line' || p.focusStyle === 'both') && (
+          <div className="focus-line" style={{ top: focusY }} />
+        )}
+        {p.focusStyle === 'band' && (
+          <div
+            className="focus-band"
+            style={{
+              top: `calc(${focusY} - ${p.fontSize * p.lineHeight * 0.7}px)`,
+              height: p.fontSize * p.lineHeight * 1.4,
+            }}
+          />
+        )}
+        {(p.focusStyle === 'arrows' || p.focusStyle === 'both') && (
+          <>
+            <div className="cue-arrow left" style={{ top: `calc(${focusY} - 14px)` }} />
+            <div className="cue-arrow right" style={{ top: `calc(${focusY} - 14px)` }} />
+          </>
+        )}
+
+        {status === 'countdown' && <div className="countdown">{countdownLeft}</div>}
       </div>
 
-      {p.bgDim > 0 && <div className="prompter-dim" style={{ opacity: p.bgDim }} />}
-
-      {(p.focusStyle === 'line' || p.focusStyle === 'both') && (
-        <div className="focus-line" style={{ top: focusY }} />
-      )}
-      {p.focusStyle === 'band' && (
-        <div
-          className="focus-band"
-          style={{
-            top: `calc(${focusY} - ${p.fontSize * p.lineHeight * 0.7}px)`,
-            height: p.fontSize * p.lineHeight * 1.4,
-          }}
-        />
-      )}
-      {(p.focusStyle === 'arrows' || p.focusStyle === 'both') && (
-        <>
-          <div className="cue-arrow left" style={{ top: `calc(${focusY} - 14px)` }} />
-          <div className="cue-arrow right" style={{ top: `calc(${focusY} - 14px)` }} />
-        </>
-      )}
-
-      {status === 'countdown' && <div className="countdown">{countdownLeft}</div>}
-
-      <div className="hud top" data-visible={controlsVisible}>
+      <div
+        className="hud top"
+        data-visible={controlsVisible}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <button
           className="pill"
           onClick={(e) => {
@@ -460,7 +508,11 @@ export function Prompter() {
         </button>
       </div>
 
-      <div className="hud bottom" data-visible={controlsVisible}>
+      <div
+        className="hud bottom"
+        data-visible={controlsVisible}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         {p.showProgress && (
           <div className="progress">
             <div style={{ width: `${info.progress * 100}%` }} />

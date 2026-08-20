@@ -67,6 +67,8 @@ export interface PrompterSettings {
   /* imagen */
   mirrorH: boolean
   mirrorV: boolean
+  /** Giro de la imagen en grados, para el teléfono montado de lado. */
+  rotation: 0 | 90 | 180 | 270
   theme: ThemeId
   customBg: string
   customFg: string
@@ -122,6 +124,7 @@ export type ActionId =
   | 'markerPrev'
   | 'mirrorH'
   | 'mirrorV'
+  | 'rotateNext'
   | 'themeNext'
   | 'toggleControls'
   | 'library'

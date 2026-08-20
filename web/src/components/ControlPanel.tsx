@@ -339,7 +339,7 @@ export function ControlPanel({
             </div>
           </div>
 
-          <div className="section-title">Espejo</div>
+          <div className="section-title">Espejo y giro</div>
           <div className="card">
             <ToggleRow
               label="Espejo horizontal"
@@ -353,6 +353,23 @@ export function ControlPanel({
               checked={p.mirrorV}
               onChange={(v) => c.set('prompter.mirrorV', v)}
             />
+            <div className="field" style={{ marginTop: 12, marginBottom: 0 }}>
+              <label>Giro de la imagen</label>
+              <Segmented
+                options={[
+                  { value: 0, label: '0°' },
+                  { value: 90, label: '90°' },
+                  { value: 180, label: '180°' },
+                  { value: 270, label: '270°' },
+                ]}
+                value={p.rotation}
+                onChange={(v) => c.set('prompter.rotation', v)}
+              />
+              <div className="muted">
+                Para el teléfono montado de lado en el soporte. El texto y las guías giran con él;
+                los botones se quedan donde están tus dedos.
+              </div>
+            </div>
           </div>
         </>
       )}

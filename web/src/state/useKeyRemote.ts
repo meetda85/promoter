@@ -56,6 +56,15 @@ export function useKeyRemote(): void {
       }
       lastFire.current = now
 
+      // Espacio e Intro activan además el elemento que tenga el foco. Si el
+      // usuario acaba de tocar un botón en pantalla, ese botón sigue enfocado
+      // y el mando dispararía la acción dos veces: play y pausa seguidos, o
+      // sea nada. Se le quita el foco antes de actuar.
+      if (code === 'Space' || code === 'Enter' || code === 'NumpadEnter') {
+        const focused = document.activeElement as HTMLElement | null
+        if (focused && focused !== document.body) focused.blur?.()
+      }
+
       e.preventDefault()
       state.runAction(binding.action)
     }

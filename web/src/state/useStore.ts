@@ -335,6 +335,12 @@ export const useStore = create<State>((set, get) => ({
       case 'mirrorV':
         s.patchPrompter({ mirrorV: !p.mirrorV })
         break
+      case 'rotateNext': {
+        const giros = [0, 90, 180, 270] as const
+        const i = giros.indexOf(p.rotation)
+        s.patchPrompter({ rotation: giros[(i + 1) % giros.length] })
+        break
+      }
       case 'themeNext':
         s.patchPrompter({ theme: nextThemeId(p.theme) })
         break
