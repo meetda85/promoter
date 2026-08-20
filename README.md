@@ -48,6 +48,9 @@ npm run dev:server  # relay del control remoto en el 8080
 
 ---
 
+> **¿Primera vez?** [**GUIA.md**](GUIA.md) lleva de la mano todo el proceso: publicar la app,
+> instalarla en los dos aparatos, enlazarlos y cargar el primer guion.
+
 ## Instalar en el teléfono
 
 Para que el teléfono la instale **como app de verdad** (icono propio, pantalla completa, funciona

@@ -5,7 +5,9 @@ services:
     name: promoter
     runtime: node
     plan: free
-    region: frankfurt
+    # Sin `region`: Render usa la suya por defecto. Para acercarla a donde
+    # ruedas, añade aquí `region: oregon` (América) o `region: frankfurt`
+    # (Europa).
     buildCommand: npm install && npm run build
     startCommand: node server/src/index.js
     healthCheckPath: /api/health
